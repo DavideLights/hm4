@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stochastic Penetration Process — S_n, S_n/n &amp; S_n/&radic;n (LLN &amp; CLT)</title>
+  <meta name="description" content="Stochastic penetration process over n systems and m attackers under Bernoulli and Rademacher models: trajectories, variance scaling, LLN, and CLT.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="top-nav">
+      <div><strong>Statistics Homeworks</strong> &mdash; DavideLights</div>
+      <div class="nav-links">
+        <a href="../index.html">Hub</a>
+        <a href="../hm2/index.html">HM2: Welford</a>
+        <a href="../hm3/index.html">HM3: Sampling Mean</a>
+        <a href="../hm4/index.html" class="active">HM4: LLN &amp; CLT</a>
+      </div>
+    </nav>
+
+    <header>
+      <h1>Stochastic Penetration Process: <em>n</em> Systems &amp; <em>m</em> Attackers</h1>
+      <p>Asymptotic behavior of Total Score <em>S<sub>n</sub></em>, Average Score <em>S<sub>n</sub>/n</em> (Law of Large Numbers), and Normalized Score <em>S<sub>n</sub>/&radic;n</em> (Central Limit Theorem) under Bernoulli and Rademacher increments</p>
+    </header>
+
+    <!-- 1. Theoretical Models & Scaling Summary -->
+    <section class="panel prose">
+      <div class="panel-title">
+        <span>1. Stochastic Models &amp; Scaling Laws</span>
+        <span class="panel-subtitle">Bernoulli X_i &isin; {0, 1} vs. Rademacher X_i &isin; {&minus;1, +1}</span>
+      </div>
+
+      <p>
+        We model <em>m</em> independent attackers attempting to penetrate <em>n</em> sequential systems. For each attacker, the step-<em>i</em> increment <em>X<sub>i</sub></em> represents the score on system <em>i</em>, with <em>X</em><sub>1</sub>, &hellip;, <em>X<sub>n</sub></em> independent and identically distributed (mean &mu; = E[<em>X<sub>i</sub></em>], variance &sigma;<sup>2</sup> = Var(<em>X<sub>i</sub></em>)). Two increment models are studied:
+      </p>
+      <ul>
+        <li>
+          <strong>Bernoulli Model:</strong> <em>X<sub>i</sub></em> &isin; {0, 1} with P(<em>X<sub>i</sub></em> = 1) = <em>p</em> and P(<em>X<sub>i</sub></em> = 0) = 1 &minus; <em>p</em>. Here &mu; = <em>p</em> and &sigma;<sup>2</sup> = <em>p</em>(1 &minus; <em>p</em>). <em>S<sub>n</sub></em> counts the total number of compromised systems.
+        </li>
+        <li>
+          <strong>Rademacher Model:</strong> <em>X<sub>i</sub></em> &isin; {&minus;1, +1} with P(<em>X<sub>i</sub></em> = +1) = P(<em>X<sub>i</sub></em> = &minus;1) = 1/2. This symmetric zero-mean walk has &mu; = 0 and &sigma;<sup>2</sup> = 1.
+        </li>
+      </ul>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Quantity</th>
+              <th>General E[&middot;]</th>
+              <th>General Var(&middot;)</th>
+              <th>Bernoulli (&mu; = p, &sigma;² = p(1&minus;p))</th>
+              <th>Rademacher (&mu; = 0, &sigma;² = 1)</th>
+              <th>Asymptotic Fate (n &rarr; &infin;)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Total Score S_n = &Sigma; X_i</strong></td>
+              <td>n&mu;</td>
+              <td>n&sigma;²</td>
+              <td>Mean np, Var np(1&minus;p)</td>
+              <td>Mean 0, Var n</td>
+              <td>Variance diverges O(n)</td>
+            </tr>
+            <tr>
+              <td><strong>Average S_n / n</strong></td>
+              <td>&mu;</td>
+              <td>&sigma;² / n</td>
+              <td>Mean p, Var p(1&minus;p)/n</td>
+              <td>Mean 0, Var 1/n</td>
+              <td>Converges in prob. to &mu; (LLN)</td>
+            </tr>
+            <tr>
+              <td><strong>Normalized S_n / &radic;n</strong></td>
+              <td>&radic;n &mu;</td>
+              <td>&sigma;²</td>
+              <td>Mean p&radic;n &rarr; &infin;, Var p(1&minus;p)</td>
+              <td>Mean 0, Var 1</td>
+              <td>Rademacher &rarr; N(0, 1) (CLT)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. Simulation Controls & Sample Trajectories -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>2. Simulation Controls &amp; Sample Trajectories</span>
+        <span class="panel-subtitle">Interactive Path Explorer</span>
+      </div>
+
+      <div class="controls-grid">
+        <div class="control-group">
+          <label for="modelSelect">Increment Model:</label>
+          <select id="modelSelect">
+            <option value="rademacher" selected>Rademacher: X_i &isin; {&minus;1, +1} (P = 1/2)</option>
+            <option value="bernoulli">Bernoulli: X_i &isin; {0, 1} (P(X_i=1) = p)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="pInput">Bernoulli Probability (<em>p</em>):</label>
+          <input type="number" id="pInput" value="0.30" min="0.05" max="0.95" step="0.05">
+          <span class="control-hint">Used when Bernoulli model is active.</span>
+        </div>
+
+        <div class="control-group">
+          <label for="mSelect">Attackers (<em>m</em>):</label>
+          <select id="mSelect">
+            <option value="500">500 attackers</option>
+            <option value="1500" selected>1,500 attackers</option>
+            <option value="3000">3,000 attackers</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label for="nMaxSelect">Systems Horizon (<em>n</em>):</label>
+          <select id="nMaxSelect">
+            <option value="50">n = 50 systems</option>
+            <option value="200">n = 200 systems</option>
+            <option value="1000" selected>n = 1,000 systems</option>
+            <option value="2500">n = 2,500 systems</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-bottom: 14px;">
+        <button type="button" id="btnSimulate">Run Stochastic Simulation</button>
+        <button type="button" id="btnNewSeed" class="btn-secondary">New Random Seed</button>
+      </div>
+
+      <div class="view-tabs" id="qtyTabs">
+        <button type="button" class="view-tab active" data-qty="total">Total Score: S_k</button>
+        <button type="button" class="view-tab" data-qty="avg">Average Score: S_k / k (LLN)</button>
+        <button type="button" class="view-tab" data-qty="norm">Normalized Score: S_k / &radic;k (CLT)</button>
+      </div>
+
+      <canvas id="pathCanvas" class="canvas-box" width="880" height="270"></canvas>
+      <div class="plot-legend">
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: #111111;"></span>
+            <span>30 Simulated Attacker Trajectories (k = 1..n)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch" style="background: #0055FF;"></span>
+            <span>Theoretical Mean &amp; &plusmn;2 SD Envelope</span>
+          </div>
+        </div>
+        <span id="pathInfoText">Model: Rademacher</span>
+      </div>
+    </section>
+
+    <!-- 3. Distributions of S_n, S_n/n, and S_n/sqrt(n) + CLT Verification -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>3. Empirical Distributions at Horizon n &amp; CLT Verification</span>
+        <span class="panel-subtitle">Comparing S_n, S_n/n, and S_n/&radic;n Across m Attackers</span>
+      </div>
+
+      <div class="controls-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        <div>
+          <canvas id="distTotalCanvas" class="canvas-box" width="280" height="210"></canvas>
+          <div class="plot-caption">Total Score S_n (Spread &prop; &radic;n)</div>
+        </div>
+        <div>
+          <canvas id="distAvgCanvas" class="canvas-box" width="280" height="210"></canvas>
+          <div class="plot-caption">Average Score S_n / n (Concentrates at &mu;)</div>
+        </div>
+        <div>
+          <canvas id="distNormCanvas" class="canvas-box" width="280" height="210"></canvas>
+          <div class="plot-caption" id="distNormCaption">Normalized S_n / &radic;n vs. N(0, 1)</div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 16px;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Systems n</th>
+              <th>Emp Mean(S_n)</th>
+              <th>Emp Var(S_n) [Theo n&sigma;²]</th>
+              <th>Emp Mean(S_n/n) [&mu;]</th>
+              <th>Emp Var(S_n/n) [&sigma;²/n]</th>
+              <th>P(|S_n/n &minus; &mu;| &gt; 0.05)</th>
+              <th>Chebyshev Bound</th>
+              <th>Emp Var(S_n/&radic;n) [&sigma;²]</th>
+              <th>Rademacher KS D(S_n/&radic;n, &Phi;)</th>
+            </tr>
+          </thead>
+          <tbody id="multiNBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 4. LLN Tail Decay & Variance Log-Log Scaling -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>4. Law of Large Numbers &amp; Variance Scaling</span>
+        <span class="panel-subtitle">Convergence in Probability &amp; Power-Law Variance Slopes</span>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <canvas id="llnCanvas" class="canvas-box" width="440" height="240"></canvas>
+          <div class="plot-caption">LLN Tail Probability P(|S_n/n &minus; &mu;| &gt; &epsilon; = 0.05) vs. Chebyshev Bound &sigma;²/(n&epsilon;²)</div>
+        </div>
+        <div>
+          <canvas id="varScaleCanvas" class="canvas-box" width="440" height="240"></canvas>
+          <div class="plot-caption" id="varScaleCaption">Log-Log Variance Scaling: Slopes +1 (S_n), 0 (S_n/&radic;n), &minus;1 (S_n/n)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Theoretical Analysis & Cybersecurity Interpretation -->
+    <section class="panel prose">
+      <div class="panel-title">
+        <span>5. Theoretical Analysis &amp; Cybersecurity Interpretation</span>
+        <span class="panel-subtitle">LLN, Variance Normalizations, CLT &amp; System-Attacker Dynamics</span>
+      </div>
+
+      <p>
+        <strong>1. Convergence in Probability of <em>S<sub>n</sub>/n</em> (Weak Law of Large Numbers):</strong>
+        Because Var(<em>S<sub>n</sub>/n</em>) = &sigma;<sup>2</sup>/<em>n</em> &rarr; 0 as <em>n</em> &rarr; &infin;, Chebyshev's inequality guarantees that for every tolerance &epsilon; &gt; 0:
+      </p>
+      <div class="formula-box">P( |S_n / n - &mu;| &gt; &epsilon; ) &le; Var(S_n / n) / &epsilon;^2 = &sigma;^2 / (n &epsilon;^2) &rarr; 0   as n &rarr; &infin;</div>
+      <p>
+        Thus <em>S<sub>n</sub>/n</em> &rarr;<sup>P</sup> &mu; (<em>p</em> in the Bernoulli model, 0 in the Rademacher model). As seen in Section 3 and 4, the histogram of <em>S<sub>n</sub>/n</em> collapses into a Dirac-like spike around &mu; and the empirical tail probability P(|<em>S<sub>n</sub>/n</em> &minus; &mu;| &gt; 0.05) rapidly drops to zero (exponentially fast by Hoeffding/Chernoff bounds, well below the conservative 1/<em>n</em> Chebyshev upper bound).
+      </p>
+
+      <p>
+        <strong>2. Behavior of the Variance under the Three Normalizations:</strong>
+        Scaling <em>S<sub>n</sub></em> by <em>n</em><sup>&minus;&alpha;</sup> multiplies its variance by <em>n</em><sup>&minus;2&alpha;</sup>, yielding Var(<em>n</em><sup>&minus;&alpha;</sup><em>S<sub>n</sub></em>) = <em>n</em><sup>1&minus;2&alpha;</sup>&sigma;<sup>2</sup>. On the log&ndash;log plot in Section 4:
+      </p>
+      <ul>
+        <li>For <strong><em>S<sub>n</sub></em> (&alpha; = 0)</strong>, Var(<em>S<sub>n</sub></em>) = <em>n</em>&sigma;<sup>2</sup> grows linearly (log&ndash;log slope <strong>+1</strong>): the trajectories fan out indefinitely.</li>
+        <li>For <strong><em>S<sub>n</sub>/n</em> (&alpha; = 1)</strong>, Var(<em>S<sub>n</sub>/n</em>) = &sigma;<sup>2</sup>/<em>n</em> decays hyperbolically (log&ndash;log slope <strong>&minus;1</strong>): random fluctuations are over-damped and vanish.</li>
+        <li>For <strong><em>S<sub>n</sub>/&radic;n</em> (&alpha; = 1/2)</strong>, the exponent 1 &minus; 2&alpha; = 0 cancels <em>n</em> exactly, leaving a constant variance Var(<em>S<sub>n</sub>/&radic;n</em>) = &sigma;<sup>2</sup> for all <em>n</em> (log&ndash;log slope <strong>0</strong>).</li>
+      </ul>
+
+      <p>
+        <strong>3. Convergence in Distribution of <em>S<sub>n</sub>/&radic;n</em> (Central Limit Theorem):</strong>
+        By the classical Lindeberg&ndash;L&eacute;vy Central Limit Theorem, the standardized sum (<em>S<sub>n</sub></em> &minus; <em>n</em>&mu;)/(&sigma;&radic;<em>n</em>) converges in distribution to the standard normal <em>N</em>(0, 1). In the <strong>Rademacher model</strong>, &mu; = 0 and &sigma; = 1, so the uncentered normalized score <em>S<sub>n</sub>/&radic;n</em> is already standardized and converges directly:
+      </p>
+      <div class="formula-box">S_n / &radic;n  &rarr;^d  N(0, 1)   (Rademacher case, &mu; = 0, &sigma;^2 = 1)</div>
+      <p>
+        This is confirmed both visually (the histogram of <em>S<sub>n</sub>/&radic;n</em> transitions from two discrete spikes at &plusmn;1 for <em>n</em> = 1 into the bell curve &phi;(<em>z</em>)) and quantitatively via the Kolmogorov&ndash;Smirnov statistic <code>D_n = sup_z |F_m(z) - &Phi;(z)|</code>, which decays toward the Monte Carlo noise floor O(1/&radic;<em>m</em>). In contrast, for the <strong>Bernoulli model</strong> (&mu; = <em>p</em> &gt; 0), E[<em>S<sub>n</sub>/&radic;n</em>] = <em>p</em>&radic;<em>n</em> &rarr; +&infin;, so the distribution of <em>S<sub>n</sub>/&radic;n</em> retains constant variance <em>p</em>(1 &minus; <em>p</em>) while drifting rightward at rate &radic;<em>n</em>; subtracting <em>p</em>&radic;<em>n</em> and dividing by &radic;(<em>p</em>(1 &minus; <em>p</em>)) recovers <em>N</em>(0, 1).
+      </p>
+
+      <p>
+        <strong>4. Interpretation for <em>n</em> Systems and <em>m</em> Attackers:</strong>
+      </p>
+      <ul>
+        <li>
+          <strong>Role of System Count (<em>n</em>):</strong> As an organization scales its infrastructure to <em>n</em> systems, the expected number of breached systems per attacker grows linearly as <em>np</em>, while the absolute uncertainty grows slower, as &radic;<em>n</em>. However, each attacker's fractional compromise rate <em>S<sub>n</sub>/n</em> locks deterministically onto their skill parameter <em>p</em> (LLN). Merely adding more systems does not dilute the fraction of compromised hosts—only hardening defenses (lowering <em>p</em>) reduces the breach rate. In the symmetric Rademacher defense/offense game (&mu; = 0), even though the average advantage per system is zero, random fluctuations of order &radic;<em>n</em> mean some attackers still achieve large positive net penetration scores purely by chance.
+        </li>
+        <li>
+          <strong>Role of Attacker Count (<em>m</em>):</strong> Increasing <em>m</em> does not alter the stochastic law of any individual attacker's trajectory, but it governs <em>aggregate</em> and <em>extreme-value</em> risk. Across all <em>m</em> attackers, the total breaches sum to <em>nm</em> i.i.d. trials with mean <em>nmp</em> and variance <em>nmp</em>(1 &minus; <em>p</em>). Moreover, from the defender's perspective, a system is compromised if <em>at least one</em> of the <em>m</em> independent attackers succeeds, raising the per-system compromise probability from <em>p</em> to <code>1 - (1 - p)^m</code> (which rapidly approaches 1 as <em>m</em> grows), while the maximum score among <em>m</em> attackers shifts into the upper tail of the normal distribution (&approx; <em>np</em> + &sigma;&radic;(<em>n</em> &middot; 2 ln <em>m</em>)).
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      Statistics Homework 4 &mdash; Stochastic Penetration Process (LLN &amp; CLT) &mdash; Standalone HTML/CSS/JS
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
